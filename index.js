@@ -7,16 +7,16 @@ let playlistItems = [];
 
 const manifest = {
     id: "org.lucasqfranco.super.elite.universal",
-    version: "11.0.0",
+    version: "12.0.0", // Subimos versión para forzar refresco
     name: "Super TV Elite Pro",
-    description: "IPTV con Triple Columna en todas las categorías",
+    description: "IPTV con Triple Columna Universal",
     resources: ["catalog", "stream", "meta"],
     types: ["tv", "movie"],
-    idPrefixes: ["sup_", "tt"], 
+    idPrefixes: ["sup_"], 
     catalogs: [
         { 
             type: "tv", id: "cat_arg", name: "🇦🇷 ARGENTINA",
-            extra: [{ name: "genre", options: ["Aire", "Noticias", "Futbol", "General"], isRequired: false }] 
+            extra: [{ name: "genre", options: ["Aire", "Noticias", "Deportes", "General"], isRequired: false }] 
         },
         { 
             type: "tv", id: "cat_sports", name: "⚽ DEPORTES",
@@ -25,10 +25,6 @@ const manifest = {
         { 
             type: "movie", id: "cat_cinema", name: "🍿 CINE & SERIES",
             extra: [{ name: "genre", options: ["Accion", "Terror", "General"], isRequired: false }] 
-        },
-        { 
-            type: "tv", id: "cat_kids", name: "👶 NIÑOS",
-            extra: [{ name: "genre", options: ["Dibujos", "General"], isRequired: false }] 
         },
         { type: "tv", id: "super_search", name: "🔍 BUSCADOR", extra: [{ name: "search" }] }
     ]
@@ -48,23 +44,22 @@ async function refreshData() {
                 genre: genreMatch ? genreMatch[1] : "General"
             };
         });
-        console.log("Sistema v11 Universal cargado.");
+        console.log("Sistema v12 Universal cargado.");
     } catch (e) { console.error("Error M3U"); }
 }
 
 builder.defineCatalogHandler(async ({ id, extra }) => {
     let list = [];
-
-    // Lógica universal de filtrado (Grupo + Género)
+    
+    // 1. Filtro primario (2da Columna)
     if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
     else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
     else if (id === "cat_cinema") list = playlistItems.filter(i => i.group.title === "CINE" || i.group.title === "SERIES");
-    else if (id === "cat_kids") list = playlistItems.filter(i => i.group.title === "NIÑOS");
     else if (extra && extra.search) {
         list = playlistItems.filter(i => i.name.toLowerCase().includes(extra.search.toLowerCase()));
     }
 
-    // Si hay un género seleccionado en la 3ra columna, filtramos la lista resultante
+    // 2. Filtro secundario (3ra Columna)
     if (extra && extra.genre && extra.genre !== "General") {
         list = list.filter(i => i.genre === extra.genre);
     }
@@ -79,7 +74,7 @@ builder.defineCatalogHandler(async ({ id, extra }) => {
     };
 });
 
-// Meta y Stream se mantienen igual
+// Los demás handlers no cambian
 builder.defineMetaHandler(async ({ id }) => {
     const item = playlistItems.find(i => i.internalId === id);
     return { meta: { id, type: "tv", name: item?.name, poster: item?.tvg.logo } };
