@@ -3,136 +3,75 @@ const parser = require('iptv-playlist-parser');
 const axios = require('axios');
 const NodeCache = require('node-cache');
 
-// --- CONFIGURACIÓN ---
-// URL de tu lista generada por el script de Python
 const M3U_URL = "https://raw.githubusercontent.com/lucasqfranco/Super/main/mi_lista_privada.m3u";
-// Lee la API KEY desde las variables de entorno que configuramos en Render
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
-const REFRESH_INTERVAL = 6 * 60 * 60 * 1000; // Refrescar cada 6 horas
-
-// Cachés para no saturar memoria ni APIs
-const playlistCache = new NodeCache({ stdTTL: 21600 }); // 6h
-const metaCache = new NodeCache({ stdTTL: 86400 });     // 24h
+const cache = new NodeCache({ stdTTL: 7200 }); // 2h de caché
 
 let playlistItems = [];
 
 const manifest = {
-    id: "org.lucasqfranco.super",
-    version: "1.0.0",
-    name: "Super IPTV Privado",
-    description: "TV en Vivo y Películas de mi lista personal",
+    id: "org.lucasqfranco.super.pro",
+    version: "2.0.0",
+    name: "Super IPTV Pro",
+    description: "TV Premium, Deportes y Cine (TMDB)",
     resources: ["catalog", "stream", "meta"],
-    types: ["movie", "tv"],
-    idPrefixes: ["super_"],
+    types: ["tv", "movie"],
+    idPrefixes: ["sup_"],
     catalogs: [
-        { type: "tv", id: "super_live", name: "📺 TV en Vivo" },
-        { type: "movie", id: "super_movies", name: "🍿 Cine Privado" }
+        { type: "tv", id: "cat_sports", name: "⚽ Deportes HD" },
+        { type: "tv", id: "cat_arg", name: "🇦🇷 Argentina Directo" },
+        { type: "movie", id: "cat_movies", name: "🍿 Cine & Estrenos" }
     ]
 };
 
 const builder = new addonBuilder(manifest);
 
-// --- LÓGICA DE DATOS ---
-
-async function refreshPlaylist() {
+async function refreshData() {
     try {
-        console.log("Actualizando lista M3U...");
-        const response = await axios.get(M3U_URL, { timeout: 10000 });
-        const result = parser.parse(response.data);
-        
-        playlistItems = result.items.map((item, index) => ({
-            ...item,
-            internalId: `super_${index}`
-        }));
-        
-        console.log(`Lista cargada: ${playlistItems.length} canales.`);
-    } catch (err) {
-        console.error("Error cargando M3U:", err.message);
-    }
+        const res = await axios.get(M3U_URL);
+        const parsed = parser.parse(res.data);
+        playlistItems = parsed.items.map((item, i) => ({ ...item, internalId: `sup_${i}` }));
+        console.log("Base de datos IPTV actualizada.");
+    } catch (e) { console.error("Error actualizando M3U"); }
 }
 
-async function getTMDBData(name) {
-    if (!TMDB_API_KEY || TMDB_API_KEY === "") return null;
-    
-    const cacheKey = `tmdb_${name.toLowerCase()}`;
-    if (metaCache.has(cacheKey)) return metaCache.get(cacheKey);
-
+async function getPoster(name) {
+    if (!TMDB_API_KEY) return null;
+    const cKey = `img_${name}`;
+    if (cache.has(cKey)) return cache.get(cKey);
     try {
         const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(name)}&language=es-ES`;
         const { data } = await axios.get(url);
-        
-        if (data.results && data.results.length > 0) {
-            const top = data.results[0];
-            const meta = {
-                poster: top.poster_path ? `https://image.tmdb.org/t/p/w500${top.poster_path}` : null,
-                background: top.backdrop_path ? `https://image.tmdb.org/t/p/original${top.backdrop_path}` : null,
-                description: top.overview || "Sin descripción disponible."
-            };
-            metaCache.set(cacheKey, meta);
-            return meta;
+        if (data.results && data.results[0]) {
+            const img = `https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`;
+            cache.set(cKey, img);
+            return img;
         }
-    } catch (e) {
-        return null;
-    }
-    return null;
+    } catch (e) { return null; }
 }
 
-// --- HANDLERS ---
-
 builder.defineCatalogHandler(async ({ type, id }) => {
-    let filtered = [];
-    
-    // Clasificación basada en el group-title que pusimos en el Python
-    if (id === "super_live") {
-        filtered = playlistItems.filter(i => !i.group.title.toLowerCase().includes('vod'));
-    } else if (id === "super_movies") {
-        filtered = playlistItems.filter(i => i.group.title.toLowerCase().includes('vod'));
-    }
+    let list = [];
+    if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
+    else if (id === "cat_arg") list = playlistItems.filter(i => i.name.toLowerCase().includes("ar |") || i.tvg.country === "AR");
+    else if (id === "cat_movies") list = playlistItems.filter(i => i.group.title === "CINE");
 
-    const metas = await Promise.all(filtered.map(async (item) => {
-        const tmdb = type === 'movie' ? await getTMDBData(item.name) : null;
-        return {
-            id: item.internalId,
-            type: type,
-            name: item.name,
-            poster: tmdb?.poster || item.tvg.logo || "",
-            description: tmdb?.description || `Grupo: ${item.group.title}`,
-            background: tmdb?.background || ""
-        };
-    }));
+    const metas = await Promise.all(list.slice(0, 200).map(async (item) => ({
+        id: item.internalId,
+        type: type,
+        name: item.name,
+        poster: type === "movie" ? await getPoster(item.name) : item.tvg.logo,
+        description: `Fuente: Privada | Grupo: ${item.group.title}`
+    })));
 
     return { metas };
 });
 
-builder.defineMetaHandler(async ({ type, id }) => {
-    const item = playlistItems.find(i => i.internalId === id);
-    if (!item) return { meta: {} };
-
-    const tmdb = type === 'movie' ? await getTMDBData(item.name) : null;
-
-    return {
-        meta: {
-            id: item.internalId,
-            type: type,
-            name: item.name,
-            poster: tmdb?.poster || item.tvg.logo,
-            background: tmdb?.background,
-            description: tmdb?.description || `Transmitiendo desde: ${item.url}`,
-        }
-    };
-});
-
 builder.defineStreamHandler(({ id }) => {
     const item = playlistItems.find(i => i.internalId === id);
-    if (item) {
-        return { streams: [{ title: "Reproducir en HD", url: item.url }] };
-    }
-    return { streams: [] };
+    return item ? { streams: [{ title: "🔥 Reproducción Ultra Rápida", url: item.url }] } : { streams: [] };
 });
 
-// Inicialización
-refreshPlaylist();
-setInterval(refreshPlaylist, REFRESH_INTERVAL);
-
-// Configuración del servidor para Render
+refreshData();
+setInterval(refreshData, 3600000);
 serveHTTP(builder.getInterface(), { port: process.env.PORT || 10000 });
