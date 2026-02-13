@@ -1,25 +1,25 @@
 import requests
 import re
 
-# Fuentes de ejemplo (puedes añadir más)
+# FUENTES: He añadido una fuente más específica para contenido en español
 SOURCES = [
     "https://iptv-org.github.io/iptv/index.m3u",
-    "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"
+    "https://raw.githubusercontent.com/guifre/iptv-es/master/lista.m3u", # España
+    "https://raw.githubusercontent.com/freeiptvlatino/lista/main/cl.m3u"   # Latino
 ]
 
-VOD_KEYWORDS = ['Película', 'Movie', '2023', '2024', 'Cinema', 'Pelicula']
-
-def validate_link(url):
-    try:
-        # Realizamos una petición HEAD para no descargar todo el video, solo ver el estado
-        response = requests.head(url, timeout=5, allow_redirects=True)
-        return response.status_code == 200
-    except:
-        return False
+# FILTROS: Solo nos quedaremos con estos países y categorías
+ALLOWED_COUNTRIES = ['AR', 'ES', 'MX', 'CL', 'CO'] # Argentina, España, México, Chile, Colombia
+CATEGORIES = {
+    'DEPORTES': ['deporte', 'sports', 'espn', 'fox sports', 'tyc', 'directv sports', 'tnt sports'],
+    'CINE': ['pelicula', 'movie', 'cinema', 'hbo', 'starx', 'cinecanal'],
+    'NIÑOS': ['nene', 'kids', 'disney', 'nick', 'cartoon'],
+    'NOTICIAS': ['noticias', 'news', 'tn', 'c5n', 'bbc', 'cnn']
+}
 
 def main():
     combined_channels = []
-    print("Iniciando procesamiento de listas...")
+    print("Iniciando filtrado inteligente...")
 
     for source in SOURCES:
         try:
@@ -31,35 +31,34 @@ def main():
                 if line.startswith("#EXTINF"):
                     current_inf = line
                 elif line.startswith("http"):
-                    # Es un link, procesamos el canal anterior
-                    name_match = re.search(r',(.+)$', current_inf)
-                    channel_name = name_match.group(1) if name_match else "Sin Nombre"
+                    # 1. Filtro de País: Buscamos el código de país en la etiqueta tvg-country
+                    country_match = re.search(r'tvg-country="([^"]+)"', current_inf)
+                    country = country_match.group(1).upper() if country_match else ""
                     
-                    # Clasificación VOD vs TV
-                    category = "TV"
-                    if any(word.lower() in current_inf.lower() or word.lower() in channel_name.lower() for word in VOD_KEYWORDS):
-                        category = "VOD"
+                    # 2. Si no es de nuestros países permitidos, lo saltamos (excepto si es deporte internacional)
+                    is_sports = any(word in current_inf.lower() for word in CATEGORIES['DEPORTES'])
                     
-                    # Validación (Solo si quieres una lista ultra limpia, esto tarda un poco)
-                    # if validate_link(line): 
-                    
-                    # Añadir metadato de grupo si no existe
-                    if 'group-title="' not in current_inf:
-                        current_inf = current_inf.replace("#EXTINF:-1", f'#EXTINF:-1 group-title="{category}"')
-                    else:
-                        # Forzar la categoría según nuestras reglas
-                        current_inf = re.sub(r'group-title="[^"]+"', f'group-title="{category}"', current_inf)
-                    
-                    combined_channels.append(f"{current_inf}\n{line}")
-        except Exception as e:
-            print(f"Error procesando {source}: {e}")
+                    if country in ALLOWED_COUNTRIES or is_sports:
+                        # 3. Asignar Categoría (Group-title)
+                        group = "General"
+                        for cat, keywords in CATEGORIES.items():
+                            if any(word in current_inf.lower() for word in keywords):
+                                group = cat
+                                break
+                        
+                        # Limpiamos el group-title original y ponemos el nuestro
+                        clean_inf = re.sub(r'group-title="[^"]+"', '', current_inf)
+                        clean_inf = clean_inf.replace("#EXTINF:-1", f'#EXTINF:-1 group-title="{group}" tvg-country="{country}"')
+                        
+                        combined_channels.append(f"{clean_inf}\n{line}")
+        except:
+            continue
 
-    # Generar archivo de salida
     with open("mi_lista_privada.m3u", "w", encoding="utf-8") as f:
         f.write("#EXTM3U\n")
         f.write("\n".join(combined_channels))
     
-    print(f"Proceso finalizado. Se encontraron {len(combined_channels)} canales.")
+    print(f"Filtrado terminado. De 13k bajamos a {len(combined_channels)} canales de calidad.")
 
 if __name__ == "__main__":
     main()
