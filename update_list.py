@@ -2,7 +2,6 @@ import requests
 import re
 from concurrent.futures import ThreadPoolExecutor
 
-# TODAS las fuentes integradas y reforzadas
 SOURCES = [
     "https://iptv-org.github.io/iptv/index.m3u",
     "http://tv.m3uts.xyz/get.php?username=m&password=m&type=m3u_plus&output=ts",
@@ -14,29 +13,25 @@ SOURCES = [
     "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u"
 ]
 
-SUB_GENRES = {
-    'Aire': ['telefe', 'trece', 'america', 'canal 9', 'tv publica', 'encuentro'],
-    'Noticias': ['tn', 'c5n', 'a24', 'cronica', '26', 'ln+', 'noticias'],
-    'Deportes': ['tyc', 'tnt sports', 'espn', 'fox sports', 'dazn', 'vix', 'dsports', 'f1'],
-    'Cine': ['hbo', 'star', 'cine', 'movie', 'max', 'warner', 'universal'],
-    'Infantil': ['disney', 'nick', 'cartoon', 'kids', 'nene', 'junior']
+SUB_GENRES_MAP = {
+    'Aire': ['telefe', 'eltrece', 'trece', 'america tv', 'canal 9 ar', 'tv publica', 'encuentro', 'paka paka'],
+    'Noticias': ['tn', 'c5n', 'a24', 'cronica', 'canal 26', 'ln+', 'noticias', 'news', 'cnn', 'bbc', 'rt ', 'telesur'],
+    'Deportes': ['tyc', 'tnt sports', 'espn', 'fox sports', 'dazn', 'vix', 'dsports', 'f1', 'deportes', 'sports', 'nba', 'golf'],
+    'Cine': ['hbo', 'star', 'cine', 'movie', 'max', 'warner', 'universal', 'paramount', 'tnt series', 'mgm', 'cinecanal', 'space'],
+    'Infantil': ['disney', 'nick', 'cartoon', 'kids', 'nene', 'junior', 'baby', 'discovery kids', 'boing']
 }
 
 def check_link(channel):
-    """Validación permisiva: si responde en 5 segundos, entra."""
     try:
-        # Usamos GET con stream=True para ser más compatibles que con HEAD
-        r = requests.get(channel['url'], timeout=5, stream=True)
+        r = requests.get(channel['url'], timeout=4, stream=True)
         r.close()
         return channel if r.status_code == 200 else None
-    except:
-        return None
+    except: return None
 
 def main():
     raw_list = []
     seen_urls = set()
-    print("Iniciando recolección masiva...")
-
+    print("Analizando canales con IA de palabras clave...")
     for source in SOURCES:
         try:
             r = requests.get(source, timeout=20)
@@ -47,12 +42,11 @@ def main():
                 elif line.startswith("http") and line not in seen_urls:
                     name_low = current_inf.lower()
                     
-                    # Detección de Argentina (Prioridad 1)
-                    is_arg = any(x in name_low for x in ["ar:", "ar |", "[ar]", "argentina"]) or 'country="AR"' in current_inf
+                    is_arg = any(x in name_low for x in ["ar:", "ar |", "[ar]", "argentina"]) or 'country="AR"' in current_inf or any(re.search(rf'\b{k}\b', name_low) for k in SUB_GENRES_MAP['Aire'])
                     
                     matched_genre = "General"
-                    for genre, keywords in SUB_GENRES.items():
-                        if any(k in name_low for k in keywords):
+                    for genre, keywords in SUB_GENRES_MAP.items():
+                        if any(re.search(rf'\b{k}\b', name_low) for k in keywords):
                             matched_genre = genre
                             break
                     
@@ -63,9 +57,8 @@ def main():
                     elif matched_genre == "Infantil": group = "NIÑOS"
 
                     clean_name = re.sub(r'#EXTINF:-1.*?,', '', current_inf)
-                    clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP)\s?[:|]?\s?', '', clean_name, flags=re.IGNORECASE).strip()
+                    clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP|PREMIUM)\s?[:|]?\s?', '', clean_name, flags=re.IGNORECASE).strip()
                     
-                    # Formato robusto: usamos una etiqueta propia x-genre
                     raw_list.append({
                         'inf': f'#EXTINF:-1 group-title="{group}" x-genre="{matched_genre}" tvg-country="{"AR" if is_arg else ""}"',
                         'name': clean_name, 'url': line
@@ -73,13 +66,13 @@ def main():
                     seen_urls.add(line)
         except: continue
 
-    print(f"Validando {len(raw_list)} enlaces. Paciencia...")
+    print(f"Validando {len(raw_list)} canales...")
     with ThreadPoolExecutor(max_workers=50) as executor:
         valid_channels = [c for c in list(executor.map(check_link, raw_list)) if c]
 
     with open("mi_lista_privada.m3u", "w", encoding="utf-8") as f:
         f.write("#EXTM3U\n")
         for c in valid_channels: f.write(f"{c['inf']},{c['name']}\n{c['url']}\n")
-    print(f"¡Hecho! Lista con {len(valid_channels)} canales.")
+    print(f"Éxito: {len(valid_channels)} canales guardados.")
 
 if __name__ == "__main__": main()
