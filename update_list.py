@@ -11,19 +11,12 @@ SOURCES = [
     "https://raw.githubusercontent.com/De-Todo-Un-Poco-Gratis/Lista-M3U/master/VOD.m3u"
 ]
 
-# Diccionario expandido para alimentar la 3ra columna de TODAS las categorías
 SUB_GENRES = {
-    # Para Argentina
-    'Aire': ['telefe', 'trece', 'america', 'canal 9', 'tv publica', 'encuentro'],
+    'Aire': ['telefe', 'trece', 'america', 'canal 9', 'tv publica'],
     'Noticias': ['tn', 'c5n', 'a24', 'cronica', '26', 'ln+', 'noticias'],
-    # Para Deportes
-    'Futbol': ['tnt sports', 'tyc', 'espn premium', 'futbol', 'soccer', 'gol tv', 'liga'],
-    'F1': ['f1', 'formula 1', 'dazn f1'],
-    # Para Cine
-    'Accion': ['hbo', 'fox', 'action', 'warner', 'universal', 'sony', 'axn'],
-    'Terror': ['horror', 'terror', 'dark', 'panic'],
-    # Para Niños
-    'Dibujos': ['disney', 'nick', 'cartoon', 'discovery kids', 'nene', 'kids']
+    'Deportes': ['tyc', 'tnt sports', 'espn', 'fox sports', 'dazn', 'vix', 'dsports', 'f1'],
+    'Cine': ['hbo', 'star', 'cine', 'movie', 'max', 'warner', 'universal'],
+    'Infantil': ['disney', 'nick', 'cartoon', 'kids', 'nene', 'junior']
 }
 
 def check_link(channel):
@@ -56,17 +49,16 @@ def main():
                     
                     group = "VARIEDADES"
                     if is_arg: group = "ARGENTINA"
-                    elif any(k in name_low for k in ['espn', 'fox sports', 'tyc', 'dazn', 'deporte']): group = "DEPORTES"
-                    elif any(k in name_low for k in ['hbo', 'star', 'cine', 'movie', 'max']): group = "CINE"
-                    elif any(k in name_low for k in ['disney', 'nick', 'kids', 'junior']): group = "NIÑOS"
+                    elif matched_genre == "Deportes": group = "DEPORTES"
+                    elif matched_genre == "Cine": group = "CINE"
+                    elif matched_genre == "Infantil": group = "NIÑOS"
 
                     clean_name = re.sub(r'#EXTINF:-1.*?,', '', current_inf)
-                    clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP)\s?[:|]?\s?', '', clean_name, flags=re.IGNORECASE).strip()
+                    clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP)\s?[:|]?\s?', '', clean_name, flags=re_IGNORECASE).strip()
                     
                     raw_list.append({
                         'inf': f'#EXTINF:-1 group-title="{group}" x-genre="{matched_genre}" tvg-country="{"AR" if is_arg else ""}"',
-                        'name': clean_name, 
-                        'url': line
+                        'name': clean_name, 'url': line
                     })
                     seen_urls.add(line)
         except: continue
