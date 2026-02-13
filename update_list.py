@@ -1,64 +1,56 @@
 import requests
 import re
 
-# FUENTES: He añadido una fuente más específica para contenido en español
 SOURCES = [
     "https://iptv-org.github.io/iptv/index.m3u",
-    "https://raw.githubusercontent.com/guifre/iptv-es/master/lista.m3u", # España
-    "https://raw.githubusercontent.com/freeiptvlatino/lista/main/cl.m3u"   # Latino
+    "http://tv.m3uts.xyz/get.php?username=m&password=m&type=m3u_plus&output=ts" # Tu nueva fuente
 ]
 
-# FILTROS: Solo nos quedaremos con estos países y categorías
-ALLOWED_COUNTRIES = ['AR', 'ES', 'MX', 'CL', 'CO'] # Argentina, España, México, Chile, Colombia
+# Filtros optimizados
+ALLOWED_COUNTRIES = ['AR', 'ES', 'MX'] 
 CATEGORIES = {
-    'DEPORTES': ['deporte', 'sports', 'espn', 'fox sports', 'tyc', 'directv sports', 'tnt sports'],
-    'CINE': ['pelicula', 'movie', 'cinema', 'hbo', 'starx', 'cinecanal'],
-    'NIÑOS': ['nene', 'kids', 'disney', 'nick', 'cartoon'],
-    'NOTICIAS': ['noticias', 'news', 'tn', 'c5n', 'bbc', 'cnn']
+    'DEPORTES': ['deporte', 'sports', 'espn', 'fox', 'tyc', 'vix', 'tnt'],
+    'CINE': ['pelicula', 'movie', 'hbo', 'star', 'cinema', 'cine', 'max'],
+    'KIDS': ['kids', 'nene', 'disney', 'nick', 'cartoon']
 }
 
 def main():
     combined_channels = []
-    print("Iniciando filtrado inteligente...")
+    print("Procesando fuentes...")
 
     for source in SOURCES:
         try:
-            r = requests.get(source, timeout=10)
+            # Timeout largo porque el servidor m3uts puede ser lento
+            r = requests.get(source, timeout=30)
             lines = r.text.splitlines()
-            
             current_inf = ""
             for line in lines:
                 if line.startswith("#EXTINF"):
                     current_inf = line
                 elif line.startswith("http"):
-                    # 1. Filtro de País: Buscamos el código de país en la etiqueta tvg-country
-                    country_match = re.search(r'tvg-country="([^"]+)"', current_inf)
-                    country = country_match.group(1).upper() if country_match else ""
-                    
-                    # 2. Si no es de nuestros países permitidos, lo saltamos (excepto si es deporte internacional)
-                    is_sports = any(word in current_inf.lower() for word in CATEGORIES['DEPORTES'])
-                    
-                    if country in ALLOWED_COUNTRIES or is_sports:
-                        # 3. Asignar Categoría (Group-title)
-                        group = "General"
-                        for cat, keywords in CATEGORIES.items():
-                            if any(word in current_inf.lower() for word in keywords):
-                                group = cat
-                                break
+                    # Lógica de filtrado: Argentina, España o Deportes
+                    name = current_inf.lower()
+                    is_arg = "ar |" in name or 'tvg-country="AR"' in current_inf
+                    is_es = "es |" in name or 'tvg-country="ES"' in current_inf
+                    is_sports = any(word in name for word in CATEGORIES['DEPORTES'])
+
+                    if is_arg or is_es or is_sports:
+                        # Asignar grupo para el Addon
+                        group = "TV"
+                        if any(word in name for word in CATEGORIES['CINE']): group = "CINE"
+                        elif is_sports: group = "DEPORTES"
+                        elif any(word in name for word in CATEGORIES['KIDS']): group = "NIÑOS"
                         
-                        # Limpiamos el group-title original y ponemos el nuestro
-                        clean_inf = re.sub(r'group-title="[^"]+"', '', current_inf)
-                        clean_inf = clean_inf.replace("#EXTINF:-1", f'#EXTINF:-1 group-title="{group}" tvg-country="{country}"')
+                        # Limpiar nombre (quitar prefijos como "AR |")
+                        clean_name = re.sub(r'(AR|ES|MX)\s?\|\s?', '', current_inf, flags=re.IGNORECASE)
                         
-                        combined_channels.append(f"{clean_inf}\n{line}")
-        except:
-            continue
+                        combined_channels.append(f"{clean_name} group-title=\"{group}\"\n{line}")
+        except Exception as e:
+            print(f"Error en fuente: {e}")
 
     with open("mi_lista_privada.m3u", "w", encoding="utf-8") as f:
-        f.write("#EXTM3U\n")
-        f.write("\n".join(combined_channels))
-    
-    print(f"Filtrado terminado. De 13k bajamos a {len(combined_channels)} canales de calidad.")
+        f.write("#EXTM3U\n" + "\n".join(combined_channels))
+    print(f"Lista creada con {len(combined_channels)} canales.")
 
 if __name__ == "__main__":
     main()
