@@ -13,12 +13,15 @@ SOURCES = [
     "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u"
 ]
 
+# Keywords de deportes expandidas (F1, DAZN, ligas, etc.)
+SPORTS_KEYWORDS = ['espn', 'fox sports', 'tyc', 'directv', 'tnt sports', 'dazn', 'vix', 'dsports', 'f1', 'deporte', 'sports', 'nba', 'golf', 'football', 'futbol', 'liga', 'champions', 'm+']
+
 SUB_GENRES_MAP = {
     'Aire': ['telefe', 'eltrece', 'trece', 'america tv', 'canal 9 ar', 'tv publica', 'encuentro', 'paka paka'],
-    'Noticias': ['tn', 'c5n', 'a24', 'cronica', 'canal 26', 'ln+', 'noticias', 'news', 'cnn', 'bbc', 'rt ', 'telesur'],
-    'Deportes': ['tyc', 'tnt sports', 'espn', 'fox sports', 'dazn', 'vix', 'dsports', 'f1', 'deportes', 'sports', 'nba', 'golf'],
-    'Cine': ['hbo', 'star', 'cine', 'movie', 'max', 'warner', 'universal', 'paramount', 'tnt series', 'mgm', 'cinecanal', 'space'],
-    'Infantil': ['disney', 'nick', 'cartoon', 'kids', 'nene', 'junior', 'baby', 'discovery kids', 'boing']
+    'Noticias': ['tn', 'c5n', 'a24', 'cronica', 'canal 26', 'ln+', 'noticias', 'news', 'cnn', 'bbc'],
+    'Deportes': SPORTS_KEYWORDS,
+    'Cine': ['hbo', 'star', 'cine', 'movie', 'max', 'warner', 'universal', 'paramount', 'cinecanal', 'space'],
+    'Infantil': ['disney', 'nick', 'cartoon', 'kids', 'junior', 'baby', 'discovery kids']
 }
 
 def check_link(channel):
@@ -31,7 +34,7 @@ def check_link(channel):
 def main():
     raw_list = []
     seen_urls = set()
-    print("Analizando canales con IA de palabras clave...")
+    print("Iniciando recolección Pro...")
     for source in SOURCES:
         try:
             r = requests.get(source, timeout=20)
@@ -42,37 +45,33 @@ def main():
                 elif line.startswith("http") and line not in seen_urls:
                     name_low = current_inf.lower()
                     
-                    is_arg = any(x in name_low for x in ["ar:", "ar |", "[ar]", "argentina"]) or 'country="AR"' in current_inf or any(re.search(rf'\b{k}\b', name_low) for k in SUB_GENRES_MAP['Aire'])
+                    # Identificación de Argentina
+                    is_arg = any(x in name_low for x in ["ar:", "ar |", "[ar]", "argentina"]) or 'country="AR"' in current_inf or any(k in name_low for k in SUB_GENRES_MAP['Aire'])
                     
+                    # Identificación de Género
                     matched_genre = "General"
                     for genre, keywords in SUB_GENRES_MAP.items():
-                        if any(re.search(rf'\b{k}\b', name_low) for k in keywords):
+                        if any(k in name_low for k in keywords):
                             matched_genre = genre
                             break
                     
-                    group = "VARIEDADES"
-                    if is_arg: group = "ARGENTINA"
-                    elif matched_genre == "Deportes": group = "DEPORTES"
-                    elif matched_genre == "Cine": group = "CINE"
-                    elif matched_genre == "Infantil": group = "NIÑOS"
-
+                    # Limpieza de nombre
                     clean_name = re.sub(r'#EXTINF:-1.*?,', '', current_inf)
                     clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP|PREMIUM)\s?[:|]?\s?', '', clean_name, flags=re.IGNORECASE).strip()
                     
                     raw_list.append({
-                        'inf': f'#EXTINF:-1 group-title="{group}" x-genre="{matched_genre}" tvg-country="{"AR" if is_arg else ""}"',
+                        'inf': f'#EXTINF:-1 group-title="{matched_genre}" x-country="{"AR" if is_arg else "OTRO"}" x-genre="{matched_genre}"',
                         'name': clean_name, 'url': line
                     })
                     seen_urls.add(line)
         except: continue
 
-    print(f"Validando {len(raw_list)} canales...")
     with ThreadPoolExecutor(max_workers=50) as executor:
         valid_channels = [c for c in list(executor.map(check_link, raw_list)) if c]
 
     with open("mi_lista_privada.m3u", "w", encoding="utf-8") as f:
         f.write("#EXTM3U\n")
         for c in valid_channels: f.write(f"{c['inf']},{c['name']}\n{c['url']}\n")
-    print(f"Éxito: {len(valid_channels)} canales guardados.")
+    print(f"Lista guardada: {len(valid_channels)} canales.")
 
 if __name__ == "__main__": main()
