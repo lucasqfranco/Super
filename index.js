@@ -6,17 +6,17 @@ const M3U_URL = "https://raw.githubusercontent.com/lucasqfranco/Super/main/mi_li
 let playlistItems = [];
 
 const manifest = {
-    id: "org.lucasqfranco.super.elite.v15",
-    version: "15.0.0",
+    id: "org.lucasqfranco.super.elite.final.fix",
+    version: "16.0.0",
     name: "Super TV Elite Pro",
-    description: "IPTV con Filtros de Género Garantizados",
+    description: "IPTV Argentina y Deportes con Filtros Inteligentes",
     resources: ["catalog", "stream", "meta"],
     types: ["tv", "movie"],
     idPrefixes: ["sup_"], 
     catalogs: [
         { 
             type: "tv", id: "cat_arg", name: "🇦🇷 ARGENTINA",
-            extra: [{ name: "genre", options: ["Aire", "Noticias", "Deportes", "General"], isRequired: false }] 
+            extra: [{ name: "genre", options: ["Aire", "Noticias", "Deportes", "Cine", "General"], isRequired: false }] 
         },
         { 
             type: "tv", id: "cat_sports", name: "⚽ DEPORTES",
@@ -34,23 +34,20 @@ async function refreshData() {
         const res = await axios.get(M3U_URL);
         const parsed = parser.parse(res.data);
         playlistItems = parsed.items.map((item, i) => {
-            // EXTRACCIÓN MANUAL DEL GÉNERO (Solución Nuclear)
             const genreMatch = item.raw.match(/x-genre="([^"]+)"/);
             return { 
                 ...item, 
                 internalId: `sup_${i}`,
-                // Si no encuentra x-genre, intentamos adivinar por el nombre para que no esté vacío
                 manualGenre: genreMatch ? genreMatch[1] : "General"
             };
         });
-        console.log("Sistema v15 Online. Canales: " + playlistItems.length);
+        console.log("Sistema v16 Online. Canales sincronizados.");
     } catch (e) { console.error("Error M3U"); }
 }
 
 builder.defineCatalogHandler(async ({ id, extra }) => {
     let list = [];
     
-    // 1. Filtro de Pestaña Principal
     if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
     else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
     else if (id === "cat_cinema") list = playlistItems.filter(i => i.group.title === "CINE" || i.group.title === "SERIES");
@@ -58,10 +55,8 @@ builder.defineCatalogHandler(async ({ id, extra }) => {
         list = playlistItems.filter(i => i.name.toLowerCase().includes(extra.search.toLowerCase()));
     }
 
-    // 2. Filtro de Género (3ra Columna)
     if (extra && extra.genre && extra.genre !== "General") {
-        // Normalizamos la búsqueda (Deportes -> Futbol si es necesario)
-        const searchGenre = extra.genre === "Futbol" ? "Deportes" : extra.genre;
+        const searchGenre = extra.genre;
         list = list.filter(i => i.manualGenre === searchGenre);
     }
 
@@ -70,7 +65,7 @@ builder.defineCatalogHandler(async ({ id, extra }) => {
             id: i.internalId,
             type: "tv",
             name: i.name,
-            poster: i.tvg.logo || "https://via.placeholder.com/300x450?text=Super"
+            poster: i.tvg.logo || "https://via.placeholder.com/300x450?text=" + i.name
         }))
     };
 });
