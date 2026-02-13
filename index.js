@@ -1,29 +1,36 @@
 const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 const parser = require('iptv-playlist-parser');
 const axios = require('axios');
-const NodeCache = require('node-cache');
 
 const M3U_URL = "https://raw.githubusercontent.com/lucasqfranco/Super/main/mi_lista_privada.m3u";
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
-const cache = new NodeCache({ stdTTL: 7200 });
-
 let playlistItems = [];
 
 const manifest = {
-    id: "org.lucasqfranco.super.elite",
-    version: "9.0.0",
-    name: "Super TV & Cinema Elite",
-    description: "Premium Argentina, Deportes, Cine y Series",
+    id: "org.lucasqfranco.super.elite.universal",
+    version: "11.0.0",
+    name: "Super TV Elite Pro",
+    description: "IPTV con Triple Columna en todas las categorías",
     resources: ["catalog", "stream", "meta"],
-    types: ["tv", "movie", "series"],
+    types: ["tv", "movie"],
     idPrefixes: ["sup_", "tt"], 
     catalogs: [
-        { type: "tv", id: "cat_arg", name: "🇦🇷 ARGENTINA" },
-        { type: "tv", id: "cat_sports", name: "⚽ DEPORTES" },
-        { type: "tv", id: "cat_cinema", name: "🍿 CINE & SERIES" },
-        { type: "tv", id: "cat_kids", name: "👶 NIÑOS" },
-        { type: "tv", id: "cat_docs", name: "🧠 DOCUMENTALES" },
-        { type: "movie", id: "super_search", name: "🔍 BUSCADOR SUPER", extra: [{ name: "search" }] }
+        { 
+            type: "tv", id: "cat_arg", name: "🇦🇷 ARGENTINA",
+            extra: [{ name: "genre", options: ["Aire", "Noticias", "Futbol", "General"], isRequired: false }] 
+        },
+        { 
+            type: "tv", id: "cat_sports", name: "⚽ DEPORTES",
+            extra: [{ name: "genre", options: ["Futbol", "F1", "General"], isRequired: false }] 
+        },
+        { 
+            type: "movie", id: "cat_cinema", name: "🍿 CINE & SERIES",
+            extra: [{ name: "genre", options: ["Accion", "Terror", "General"], isRequired: false }] 
+        },
+        { 
+            type: "tv", id: "cat_kids", name: "👶 NIÑOS",
+            extra: [{ name: "genre", options: ["Dibujos", "General"], isRequired: false }] 
+        },
+        { type: "tv", id: "super_search", name: "🔍 BUSCADOR", extra: [{ name: "search" }] }
     ]
 };
 
@@ -33,23 +40,34 @@ async function refreshData() {
     try {
         const res = await axios.get(M3U_URL);
         const parsed = parser.parse(res.data);
-        playlistItems = parsed.items.map((item, i) => ({ ...item, internalId: `sup_${i}` }));
-        console.log("Sincronización: " + playlistItems.length + " items.");
+        playlistItems = parsed.items.map((item, i) => {
+            const genreMatch = item.raw.match(/x-genre="([^"]+)"/);
+            return { 
+                ...item, 
+                internalId: `sup_${i}`,
+                genre: genreMatch ? genreMatch[1] : "General"
+            };
+        });
+        console.log("Sistema v11 Universal cargado.");
     } catch (e) { console.error("Error M3U"); }
 }
 
 builder.defineCatalogHandler(async ({ id, extra }) => {
     let list = [];
 
-    if (extra && extra.search) {
-        const query = extra.search.toLowerCase();
-        list = playlistItems.filter(i => i.name.toLowerCase().includes(query));
-    } 
-    else if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
+    // Lógica universal de filtrado (Grupo + Género)
+    if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
     else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
     else if (id === "cat_cinema") list = playlistItems.filter(i => i.group.title === "CINE" || i.group.title === "SERIES");
     else if (id === "cat_kids") list = playlistItems.filter(i => i.group.title === "NIÑOS");
-    else if (id === "cat_docs") list = playlistItems.filter(i => i.group.title === "DOCS");
+    else if (extra && extra.search) {
+        list = playlistItems.filter(i => i.name.toLowerCase().includes(extra.search.toLowerCase()));
+    }
+
+    // Si hay un género seleccionado en la 3ra columna, filtramos la lista resultante
+    if (extra && extra.genre && extra.genre !== "General") {
+        list = list.filter(i => i.genre === extra.genre);
+    }
 
     return {
         metas: list.slice(0, 100).map(i => ({
@@ -61,30 +79,15 @@ builder.defineCatalogHandler(async ({ id, extra }) => {
     };
 });
 
-builder.defineMetaHandler(async ({ type, id }) => {
+// Meta y Stream se mantienen igual
+builder.defineMetaHandler(async ({ id }) => {
     const item = playlistItems.find(i => i.internalId === id);
-    if (!item) return { meta: {} };
-    return {
-        meta: {
-            id: id,
-            type: type,
-            name: item.name,
-            poster: item.tvg.logo,
-            description: "Transmitiendo en vivo desde lista verificada."
-        }
-    };
+    return { meta: { id, type: "tv", name: item?.name, poster: item?.tvg.logo } };
 });
 
 builder.defineStreamHandler(async ({ id }) => {
-    let item = playlistItems.find(i => i.internalId === id);
-    if (!item && id.startsWith("tt")) {
-        try {
-            const tmdb = await axios.get(`https://api.themoviedb.org/3/find/${id}?api_key=${TMDB_API_KEY}&external_source=imdb_id&language=es-ES`);
-            const name = tmdb.data.movie_results[0]?.title || tmdb.data.tv_results[0]?.name;
-            if (name) item = playlistItems.find(i => i.name.toLowerCase().includes(name.toLowerCase()));
-        } catch (e) { }
-    }
-    return item ? { streams: [{ title: "🚀 Ver en Super Cinema HD", url: item.url }] } : { streams: [] };
+    const item = playlistItems.find(i => i.internalId === id);
+    return item ? { streams: [{ title: "🔥 Stream Directo", url: item.url }] } : { streams: [] };
 });
 
 refreshData();
