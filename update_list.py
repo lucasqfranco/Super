@@ -29,7 +29,6 @@ def check_link(channel):
 def main():
     raw_list = []
     seen_urls = set()
-    print("Fase 1: Recolectando canales de todas las fuentes...")
     for source in SOURCES:
         try:
             r = requests.get(source, timeout=20)
@@ -54,25 +53,24 @@ def main():
                     elif matched_genre == "Cine": group = "CINE"
                     elif matched_genre == "Infantil": group = "NIÑOS"
 
-                    # CORRECCIÓN DEL ERROR DE SINTAXIS ANTERIOR
                     clean_name = re.sub(r'#EXTINF:-1.*?,', '', current_inf)
                     clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP)\s?[:|]?\s?', '', clean_name, flags=re.IGNORECASE).strip()
                     
+                    # <<< ¡ESTA ES LA LÍNEA CLAVE CORREGIDA!
+                    final_group = f"{group};{matched_genre}"
+                    
                     raw_list.append({
-                        'inf': f'#EXTINF:-1 group-title="{group}" x-genre="{matched_genre}" tvg-country="{"AR" if is_arg else ""}"',
+                        'inf': f'#EXTINF:-1 group-title="{final_group}"',
                         'name': clean_name, 'url': line
                     })
                     seen_urls.add(line)
         except: continue
-    
-    print(f"Fase 2: {len(raw_list)} canales recolectados. Validando links...")
+
     with ThreadPoolExecutor(max_workers=50) as executor:
         valid_channels = [c for c in list(executor.map(check_link, raw_list)) if c]
 
-    print(f"Fase 3: {len(valid_channels)} canales válidos encontrados. Guardando archivo.")
     with open("mi_lista_privada.m3u", "w", encoding="utf-8") as f:
         f.write("#EXTM3U\n")
         for c in valid_channels: f.write(f"{c['inf']},{c['name']}\n{c['url']}\n")
-    print("Proceso completado con éxito.")
 
 if __name__ == "__main__": main()
