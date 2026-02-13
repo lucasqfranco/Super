@@ -14,7 +14,7 @@ SOURCES = [
 ]
 
 CATEGORIES = {
-    'DEPORTES': ['espn', 'fox sports', 'tyc', 'directv', 'tnt sports', 'win sports', 'dazn', 'vix', 'f1', 'dsports'],
+    'DEPORTES': ['espn', 'fox sports', 'tyc', 'directv', 'tnt sports', 'win sports', 'dazn', 'bein', 'vix', 'f1', 'dsports'],
     'CINE': ['hbo', 'starx', 'cinecanal', 'pelicula', 'movie', 'cinema', 'max', 'universal', 'paramount', 'netflix'],
     'SERIES': ['serie', 'season', 'temporada', 'capitulo', 'episode', 'hulu', 'apple tv'],
     'NIÑOS': ['disney', 'nick', 'cartoon', 'kids', 'discovery kids', 'junior', 'baby']
@@ -38,7 +38,6 @@ def main():
             r = requests.get(source, timeout=20)
             lines = r.text.splitlines()
             current_inf = ""
-            # Detectar si la fuente es puramente de Cine/Series
             is_vod_source = any(x in source.lower() for x in ["vod", "peliculas", "filmes", "serie"])
             
             for line in lines:
@@ -49,19 +48,23 @@ def main():
                     
                     # Clasificación
                     group = "VARIEDADES"
-                    if is_vod_source or any(w in name_low for w in CATEGORIES['CINE']): group = "CINE"
-                    elif any(w in name_low for w in CATEGORIES['SERIES']): group = "SERIES"
-                    elif any(w in name_low for w in CATEGORIES['DEPORTES']): group = "DEPORTES"
-                    elif any(w in name_low for w in CATEGORIES['NIÑOS']): group = "NIÑOS"
+                    for cat, keywords in CATEGORIES.items():
+                        if any(word in name_low for word in keywords):
+                            group = cat
+                            break
                     
+                    # Detección de Argentina
                     is_arg = any(x in name_low for x in ["ar:", "ar |", "[ar]", "argentina"]) or 'country="AR"' in current_inf
                     
                     # Limpieza de nombre
                     clean_name = re.sub(r'#EXTINF:-1.*?,', '', current_inf)
                     clean_name = re.sub(r'\[.*?\]|\(.*?\)|(AR|LAT|HD|SD|FHD|VIP)\s?[:|]?\s?', '', clean_name, flags=re.IGNORECASE).strip()
 
+                    # Definimos el tag de país fuera de la f-string para evitar el error de backslash
+                    country_tag = 'tvg-country="AR"' if is_arg else ''
+
                     raw_list.append({
-                        'inf': f'#EXTINF:-1 group-title="{group}" { "tvg-country=\\"AR\\"" if is_arg else "" }',
+                        'inf': f'#EXTINF:-1 group-title="{group}" {country_tag}',
                         'name': clean_name,
                         'url': line
                     })
