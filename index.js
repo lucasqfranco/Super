@@ -10,14 +10,20 @@ const cache = new NodeCache({ stdTTL: 7200 });
 let playlistItems = [];
 
 const manifest = {
-    id: "org.lucasqfranco.super.ultimate",
-    version: "6.0.0",
-    name: "Super TV & Cinema",
-    description: "TV en Vivo, Películas Latino y Series Verificadas",
-    resources: ["catalog", "stream", "meta", "search"],
+    id: "org.lucasqfranco.super.final",
+    version: "7.0.0",
+    name: "Super TV & Cinema Pro",
+    description: "TV en Vivo, Películas y Series Latino (Verificado)",
+    resources: ["catalog", "stream", "meta"],
     types: ["movie", "series", "tv"],
     idPrefixes: ["sup_", "tt"], 
     catalogs: [
+        { 
+            type: "movie", 
+            id: "super_search", 
+            name: "🔍 BUSCAR EN SUPER",
+            extra: [{ name: "search", isRequired: false }] 
+        },
         { type: "tv", id: "cat_sports", name: "⚽ DEPORTES" },
         { type: "movie", id: "cat_movies", name: "🍿 PELÍCULAS" },
         { type: "series", id: "cat_series", name: "📺 SERIES" },
@@ -32,29 +38,36 @@ async function refreshData() {
         const res = await axios.get(M3U_URL);
         const parsed = parser.parse(res.data);
         playlistItems = parsed.items.map((item, i) => ({ ...item, internalId: `sup_${i}` }));
-        console.log("Sincronización completa.");
-    } catch (e) { console.error("Error M3U"); }
+        console.log("Base de datos sincronizada: " + playlistItems.length);
+    } catch (e) { console.error("Error cargando M3U"); }
 }
 
-// 1. Manejador de Catálogos
-builder.defineCatalogHandler(async ({ type, id }) => {
+// MANEJADOR DE CATÁLOGOS (Incluye la Búsqueda)
+builder.defineCatalogHandler(async ({ type, id, extra }) => {
     let list = [];
-    if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
+
+    // Lógica de Búsqueda
+    if (extra && extra.search) {
+        const query = extra.search.toLowerCase();
+        list = playlistItems.filter(i => i.name.toLowerCase().includes(query));
+    } 
+    // Lógica de Categorías Normales
+    else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
     else if (id === "cat_movies") list = playlistItems.filter(i => i.group.title === "CINE");
     else if (id === "cat_series") list = playlistItems.filter(i => i.group.title === "SERIES");
     else if (id === "cat_arg") list = playlistItems.filter(i => i.tvg.country === "AR");
 
-    return {
-        metas: list.slice(0, 100).map(i => ({
-            id: i.internalId,
-            type: type,
-            name: i.name,
-            poster: i.tvg.logo || "https://via.placeholder.com/300x450?text=Cinema"
-        }))
-    };
+    const metas = list.slice(0, 100).map(i => ({
+        id: i.internalId,
+        type: type || "movie",
+        name: i.name,
+        poster: i.tvg.logo || "https://via.placeholder.com/300x450?text=Cinema"
+    }));
+
+    return { metas };
 });
 
-// 2. Manejador de Metadatos (Carátulas y sinopsis)
+// MANEJADOR DE METADATOS
 builder.defineMetaHandler(async ({ type, id }) => {
     const item = playlistItems.find(i => i.internalId === id);
     if (!item) return { meta: {} };
@@ -69,36 +82,22 @@ builder.defineMetaHandler(async ({ type, id }) => {
                 name: res ? (res.title || res.name) : item.name,
                 poster: res ? `https://image.tmdb.org/t/p/w500${res.poster_path}` : item.tvg.logo,
                 background: res ? `https://image.tmdb.org/t/p/original${res.backdrop_path}` : null,
-                description: res ? res.overview : "Contenido verificado de tu lista privada."
+                description: res ? res.overview : "Contenido de tu lista privada."
             }
         };
     } catch (e) { return { meta: { id, type, name: item.name } }; }
 });
 
-// 3. Manejador de Búsqueda
-builder.defineSearchHandler(async ({ query }) => {
-    const searchResults = playlistItems.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
-    return {
-        metas: searchResults.slice(0, 20).map(i => ({
-            id: i.internalId,
-            type: "movie",
-            name: i.name,
-            poster: i.tvg.logo
-        }))
-    };
-});
-
-// 4. Manejador de Streams (Lo que hace que la peli se vea)
-builder.defineStreamHandler(async ({ id }) => {
+// MANEJADOR DE STREAMS
+builder.defineStreamHandler(async ({ type, id }) => {
     let item = playlistItems.find(i => i.internalId === id);
     
-    // Si el ID es tt... (de IMDb), buscamos por nombre en nuestra lista
     if (!item && id.startsWith("tt")) {
         try {
             const tmdb = await axios.get(`https://api.themoviedb.org/3/find/${id}?api_key=${TMDB_API_KEY}&external_source=imdb_id&language=es-ES`);
             const name = tmdb.data.movie_results[0]?.title || tmdb.data.tv_results[0]?.name;
             if (name) item = playlistItems.find(i => i.name.toLowerCase().includes(name.toLowerCase()));
-        } catch (e) { console.log("IMDb link not found"); }
+        } catch (e) { console.log("Error en match IMDb"); }
     }
 
     return item ? { streams: [{ title: "🚀 Reproducir en Super Cinema (HD)", url: item.url }] } : { streams: [] };
