@@ -6,10 +6,10 @@ const M3U_URL = "https://raw.githubusercontent.com/lucasqfranco/Super/main/mi_li
 let playlistItems = [];
 
 const manifest = {
-    id: "org.lucasqfranco.super.elite.final.fix",
-    version: "14.0.0", // Subimos versión para forzar un refresco total
+    id: "org.lucasqfranco.super.elite.v15",
+    version: "15.0.0",
     name: "Super TV Elite Pro",
-    description: "IPTV con Triple Columna Universal",
+    description: "IPTV con Filtros de Género Garantizados",
     resources: ["catalog", "stream", "meta"],
     types: ["tv", "movie"],
     idPrefixes: ["sup_"], 
@@ -22,10 +22,7 @@ const manifest = {
             type: "tv", id: "cat_sports", name: "⚽ DEPORTES",
             extra: [{ name: "genre", options: ["Futbol", "F1", "General"], isRequired: false }] 
         },
-        { 
-            type: "movie", id: "cat_cinema", name: "🍿 CINE & SERIES",
-            extra: [{ name: "genre", options: ["Accion", "Terror", "General"], isRequired: false }] 
-        },
+        { type: "movie", id: "cat_cinema", name: "🍿 CINE & SERIES" },
         { type: "tv", id: "super_search", name: "🔍 BUSCADOR", extra: [{ name: "search" }] }
     ]
 };
@@ -36,43 +33,36 @@ async function refreshData() {
     try {
         const res = await axios.get(M3U_URL);
         const parsed = parser.parse(res.data);
-        playlistItems = parsed.items.map((item, i) => ({ 
-            ...item, 
-            internalId: `sup_${i}`
-        }));
-        console.log("Sistema v14 Final cargado. Canales: " + playlistItems.length);
+        playlistItems = parsed.items.map((item, i) => {
+            // EXTRACCIÓN MANUAL DEL GÉNERO (Solución Nuclear)
+            const genreMatch = item.raw.match(/x-genre="([^"]+)"/);
+            return { 
+                ...item, 
+                internalId: `sup_${i}`,
+                // Si no encuentra x-genre, intentamos adivinar por el nombre para que no esté vacío
+                manualGenre: genreMatch ? genreMatch[1] : "General"
+            };
+        });
+        console.log("Sistema v15 Online. Canales: " + playlistItems.length);
     } catch (e) { console.error("Error M3U"); }
 }
 
 builder.defineCatalogHandler(async ({ id, extra }) => {
     let list = [];
     
-    // --- LÓGICA DE FILTRADO CORREGIDA Y A PRUEBA DE BALAS ---
-
-    // 1. Buscador
-    if (extra && extra.search) {
+    // 1. Filtro de Pestaña Principal
+    if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
+    else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
+    else if (id === "cat_cinema") list = playlistItems.filter(i => i.group.title === "CINE" || i.group.title === "SERIES");
+    else if (extra && extra.search) {
         list = playlistItems.filter(i => i.name.toLowerCase().includes(extra.search.toLowerCase()));
-    } else {
-        // 2. Filtro de Categoría Principal (2da Columna)
-        let primaryGroup = "";
-        if (id === "cat_arg") primaryGroup = "ARGENTINA";
-        else if (id === "cat_sports") primaryGroup = "DEPORTES";
-        else if (id === "cat_cinema") primaryGroup = "CINE";
+    }
 
-        list = playlistItems.filter(i => {
-            // El group-title viene como "GRUPO;GENERO", buscamos la primera parte.
-            const group = i.group.title.split(';')[0];
-            return group === primaryGroup || (primaryGroup === 'CINE' && group === 'SERIES');
-        });
-
-        // 3. Filtro de Género (3ra Columna)
-        if (extra && extra.genre && extra.genre !== "General") {
-            // Buscamos el género en la segunda parte del group-title
-            list = list.filter(i => {
-                const parts = i.group.title.split(';');
-                return parts.length > 1 && parts[1] === extra.genre;
-            });
-        }
+    // 2. Filtro de Género (3ra Columna)
+    if (extra && extra.genre && extra.genre !== "General") {
+        // Normalizamos la búsqueda (Deportes -> Futbol si es necesario)
+        const searchGenre = extra.genre === "Futbol" ? "Deportes" : extra.genre;
+        list = list.filter(i => i.manualGenre === searchGenre);
     }
 
     return {
@@ -85,7 +75,6 @@ builder.defineCatalogHandler(async ({ id, extra }) => {
     };
 });
 
-// Los demás handlers no necesitan cambios
 builder.defineMetaHandler(async ({ id }) => {
     const item = playlistItems.find(i => i.internalId === id);
     return { meta: { id, type: "tv", name: item?.name, poster: item?.tvg.logo } };
