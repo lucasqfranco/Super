@@ -6,8 +6,8 @@ const M3U_URL = "https://raw.githubusercontent.com/lucasqfranco/Super/main/mi_li
 let playlistItems = [];
 
 const manifest = {
-    id: "org.lucasqfranco.super.elite.universal",
-    version: "12.0.0",
+    id: "org.lucasqfranco.super.elite.final",
+    version: "13.0.0", // Subimos versión para forzar refresco
     name: "Super TV Elite Pro",
     description: "IPTV con Triple Columna Universal",
     resources: ["catalog", "stream", "meta"],
@@ -37,29 +37,32 @@ async function refreshData() {
         const res = await axios.get(M3U_URL);
         const parsed = parser.parse(res.data);
         playlistItems = parsed.items.map((item, i) => {
-            const genreMatch = item.raw.match(/x-genre="([^"]+)"/);
+            const [group, genre] = item.group.title.split(';');
             return { 
                 ...item, 
                 internalId: `sup_${i}`,
-                genre: genreMatch ? genreMatch[1] : "General"
+                mainGroup: group || "VARIEDADES",
+                subGenre: genre || "General"
             };
         });
-        console.log("Sistema v12 Universal cargado. Canales en memoria: " + playlistItems.length);
+        console.log("Sistema v13 cargado. Canales en memoria: " + playlistItems.length);
     } catch (e) { console.error("Error M3U"); }
 }
 
 builder.defineCatalogHandler(async ({ id, extra }) => {
     let list = [];
     
-    if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
-    else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
-    else if (id === "cat_cinema") list = playlistItems.filter(i => i.group.title === "CINE" || i.group.title === "SERIES");
+    // 1. Filtro primario (2da Columna)
+    if (id === "cat_arg") list = playlistItems.filter(i => i.mainGroup === "ARGENTINA");
+    else if (id === "cat_sports") list = playlistItems.filter(i => i.mainGroup === "DEPORTES");
+    else if (id === "cat_cinema") list = playlistItems.filter(i => i.mainGroup === "CINE" || i.mainGroup === "SERIES");
     else if (extra && extra.search) {
         list = playlistItems.filter(i => i.name.toLowerCase().includes(extra.search.toLowerCase()));
     }
 
+    // 2. Filtro secundario (3ra Columna)
     if (extra && extra.genre && extra.genre !== "General") {
-        list = list.filter(i => i.genre === extra.genre);
+        list = list.filter(i => i.subGenre === extra.genre);
     }
 
     return {
