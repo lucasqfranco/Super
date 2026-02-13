@@ -1,0 +1,15 @@
+{
+  "name": "stremio-private-iptv",
+  "version": "1.0.0",
+  "description": "Addon privado de IPTV con metadatos TMDB",
+  "main": "index.js",
+  "dependencies": {
+    "stremio-addon-sdk": "^1.6.0",
+    "iptv-playlist-parser": "^0.15.1",
+    "axios": "^1.6.0",
+    "node-cache": "^5.1.2"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
