@@ -11,9 +11,9 @@ let playlistItems = [];
 
 const manifest = {
     id: "org.lucasqfranco.super.elite",
-    version: "8.0.0",
+    version: "9.0.0",
     name: "Super TV & Cinema Elite",
-    description: "Todo en uno: Argentina, Deportes, Cine, Kids y Docs",
+    description: "Premium Argentina, Deportes, Cine y Series",
     resources: ["catalog", "stream", "meta"],
     types: ["tv", "movie", "series"],
     idPrefixes: ["sup_", "tt"], 
@@ -23,7 +23,6 @@ const manifest = {
         { type: "tv", id: "cat_cinema", name: "🍿 CINE & SERIES" },
         { type: "tv", id: "cat_kids", name: "👶 NIÑOS" },
         { type: "tv", id: "cat_docs", name: "🧠 DOCUMENTALES" },
-        // Buscador especial (Tipo movie para que aparezca en la lupa general)
         { type: "movie", id: "super_search", name: "🔍 BUSCADOR SUPER", extra: [{ name: "search" }] }
     ]
 };
@@ -35,7 +34,7 @@ async function refreshData() {
         const res = await axios.get(M3U_URL);
         const parsed = parser.parse(res.data);
         playlistItems = parsed.items.map((item, i) => ({ ...item, internalId: `sup_${i}` }));
-        console.log("Sincronización exitosa: " + playlistItems.length);
+        console.log("Sincronización: " + playlistItems.length + " items.");
     } catch (e) { console.error("Error M3U"); }
 }
 
@@ -46,7 +45,7 @@ builder.defineCatalogHandler(async ({ id, extra }) => {
         const query = extra.search.toLowerCase();
         list = playlistItems.filter(i => i.name.toLowerCase().includes(query));
     } 
-    else if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA" || i.tvg.country === "AR");
+    else if (id === "cat_arg") list = playlistItems.filter(i => i.group.title === "ARGENTINA");
     else if (id === "cat_sports") list = playlistItems.filter(i => i.group.title === "DEPORTES");
     else if (id === "cat_cinema") list = playlistItems.filter(i => i.group.title === "CINE" || i.group.title === "SERIES");
     else if (id === "cat_kids") list = playlistItems.filter(i => i.group.title === "NIÑOS");
@@ -71,7 +70,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
             type: type,
             name: item.name,
             poster: item.tvg.logo,
-            description: "Canal verificado de tu lista privada."
+            description: "Transmitiendo en vivo desde lista verificada."
         }
     };
 });
@@ -85,7 +84,7 @@ builder.defineStreamHandler(async ({ id }) => {
             if (name) item = playlistItems.find(i => i.name.toLowerCase().includes(name.toLowerCase()));
         } catch (e) { }
     }
-    return item ? { streams: [{ title: "🚀 Reproducir en Super Elite", url: item.url }] } : { streams: [] };
+    return item ? { streams: [{ title: "🚀 Ver en Super Cinema HD", url: item.url }] } : { streams: [] };
 });
 
 refreshData();
