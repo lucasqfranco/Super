@@ -77,5 +77,3 @@ https://cdn.mycloudstream.io/hls/live/broadcast/xn44vdc5/index.m3u8
 https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/64d161c93c785e0008df575e/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=06601cb4-8457-445a-9eef-ef7e1a4377c5
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Vevo ino
 https://amg00056-amg00056c13-rakuten-es-3246.playouts.now.amagi.tv/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",VM ino
-https://59ef525c24caa.streamlock.net/vmtv/vmlatino/playlist.m3u8
