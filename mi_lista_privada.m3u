@@ -1,38 +1,18 @@
 #EXTM3U
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",3ABN ino
 https://3abn.bozztv.com/3abn2/Lat_live/smil:Lat_live.smil/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="AR" x-genre="General",AvatA lenda de Aang
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6759eeb1bd523200083b4f29/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=8ee99fa9-8924-42ef-bf8b-617216b5b280&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=30d3b1c1-b004-4e90-abca-479f264a4332
-#EXTINF:-1 group-title="General" x-country="AR" x-genre="General",AvatLa Leyenda de Aang
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6759ee82bd523200083b4f0f/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=610c8f98-68e8-48e7-9cc5-5dd3fefdcab5&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=ac37b06c-c554-420e-a5cb-ea1e7526e509
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Beyblade en Español
 https://amg01796-amg01796c8-rakuten-es-5333.playouts.now.amagi.tv/playlist/amg01796-fastmediafast-beybladees-rakutenes/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Bonches inos TV
-https://5790d294af2dc.streamlock.net/latinostv/latinostv/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",CBS en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/668c5cb4f01dbe0008dd4082/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=d63ba0da-e45c-4221-b309-d4a95e097324
-#EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Cine en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cf96b1c4f1ca3f0629f4bf0/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=b18cab47-c8c9-4310-a69e-1ee5c8a63e46
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Comedy Central en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cf96dad1652631e36d43320/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=504cf6c7-46f8-481f-a7cf-293040d76b2f
+#EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",CGTN Español
+https://espanol-livews.cgtn.com/hls/LSveOGBaBw41Ea7ukkVAUdKQ220802LSTexu6xAuFH8VZNBLE1ZNEa220802cd/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Cops en Español
 https://rightsboosterltd-cops-1-es.rakuten.wurl.tv/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",CSI en Español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/604928d54a4f730007ff76bc/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=78c16a12-53ba-4e25-a489-4cb025afb541
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",CSI: Miami en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/632b5950b515b000079e6b81/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=d8164970-724d-4bb3-b021-593778f9e8c3
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",CSI: NY en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/632b606e12a67b0007c9e371/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=7248ef39-3120-4d03-a397-2e91e7064868
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",DaystEspañol
 https://live-mcl.cdn01.net/smarttv/64wj6m6d8/playlist.m3u8?ads.vf=58GrEFelNTK
-#EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",Euronews Español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/619d59b7cbef25000728221c/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=610c8f98-68e8-48e7-9cc5-5dd3fefdcab5&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=613ea596-8d17-4edf-8c00-bb3d152f2c8c
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",Euronews Español
 https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/euronews-spa/euronews-es.m3u8?ads.vf=DLlKFAN37a8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",France 24 Español
 https://live.france24.com/hls/live/2037220-b/F24_ES_HI_HLS/master_5000.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Hercules: The Legendy Journeys
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/68e38aaf8082ad3760def7bc/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=07998d5d-dd4a-4bcc-84be-58dcbcec76b7&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=4e809abf-6194-4ee3-8342-50b7030afd29
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",ino Channel TV
 https://cdn.vegasplus.us/vegas/latch/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",ino Classic TV
@@ -41,18 +21,8 @@ https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/4d
 https://amg00375-fusemedia-latinovibes-xumo-qyjhw.amagi.tv/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Lighting Lives Blessing Nations TV ino
 https://brightstar-latino-pull-secure.akamaized.net/brightstarlatino/stream.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Little Angel's Playroom en Español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/60493283ffc52f000710edae/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=e5b4a767-1aae-4c73-b332-6963cc49adfb
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Memorias FM Pop ino
 https://video.xtrematv.com:3891/live/memoriaspoplatinolive.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",MTV en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5cf96d351652631e36d4331f/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=a793d444-cf6d-40a2-8d01-6167e77ae410
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",MTV Flow ino
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/62b218fc511d4b00070ddc0c/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=610c8f98-68e8-48e7-9cc5-5dd3fefdcab5&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=b2e881c3-4285-4dfe-9998-719118300bba
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",MTV Flow ino
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d3609cd6a6c78d7672f2a81/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=5621cb0f-084b-42a0-aa1c-441724a3481e
-#EXTINF:-1 group-title="Infantil" x-country="" x-genre="Infantil",Nickelodeon en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5d8d08395f39465da6fb3ec4/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=4f542da4-e11c-4e1a-b2c5-72bb020bd334
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Rakuten TV Cine Español
 https://3ed8837c27bf41dabe8e2627be2e57e6.mediatailor.eu-west-1.amazonaws.com/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6196/master.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",RT en Español
@@ -65,15 +35,9 @@ https://bild-und-ton.stream/sophiatv-es/smil:sophia-tv-es.smil/playlist.m3u8
 https://lotus.stingray.com/manifest/ose-202ads-montreal/samsungtvplus/master.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",SUMtv ino
 https://bozztv.com/uni10rtmp/ssstv2-cdn/smil:ssstv2web.smil/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",The Walking Dead en español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e82bb378601b80007b4bd78/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=d52a116d-e23e-4b84-a9ad-f69a8706d816
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",TikTok Radio en Español
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/63dac1b78795f300086d5ca6/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=610c8f98-68e8-48e7-9cc5-5dd3fefdcab5&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=1d2121d9-dd76-4e40-80ad-2623d71dbf01
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",TV Maná Español
 https://w1.manasat.com/tvmana-espanol/smil:tvmana-espanol.smil/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",TVCiB ino
 https://cdn.mycloudstream.io/hls/live/broadcast/xn44vdc5/index.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Vevo Íconos inos
-https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/64d161c93c785e0008df575e/master.m3u8?appName=web&appVersion=9.19.0&deviceDNT=0&deviceId=affbdbfa-5fa3-48af-8369-57c005daef42&deviceMake=firefox&deviceModel=web&deviceType=web&deviceVersion=147.0.0&serverSideAds=false&sid=06601cb4-8457-445a-9eef-ef7e1a4377c5
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Vevo ino
 https://amg00056-amg00056c13-rakuten-es-3246.playouts.now.amagi.tv/playlist.m3u8
