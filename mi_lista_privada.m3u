@@ -27,8 +27,6 @@ https://brightstar-latino-pull-secure.akamaized.net/brightstarlatino/stream.m3u8
 https://video.xtrematv.com:3891/live/memoriaspoplatinolive.m3u8
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Rakuten TV Cine Español
 https://3ed8837c27bf41dabe8e2627be2e57e6.mediatailor.eu-west-1.amazonaws.com/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6196/master.m3u8
-#EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",RT en Español
-https://rt-esp.rttv.com/dvr/rtesp/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Soap ino
 https://fast-channels-network-soaplatino-1-it.rakuten.wurl.tv/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Sophia TV Español
