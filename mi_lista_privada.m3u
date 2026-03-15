@@ -27,8 +27,6 @@ https://jmp2.uk/plu-604928d54a4f730007ff76bc.m3u8
 https://jmp2.uk/plu-632b5950b515b000079e6b81.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",CSI: NY en español
 https://jmp2.uk/plu-632b606e12a67b0007c9e371.m3u8
-#EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",DaystEspañol
-https://live-mcl.cdn01.net/smarttv/64wj6m6d8/playlist.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",Euronews Español
 https://jmp2.uk/plu-619d59b7cbef25000728221c.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",France 24 Español
@@ -77,8 +75,6 @@ https://cdn.mycloudstream.io/hls/live/broadcast/xn44vdc5/index.m3u8
 https://jmp2.uk/plu-64d161c93c785e0008df575e.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Vevo ino
 https://amg00056-amg00056c13-rakuten-es-3246.playouts.now.amagi.tv/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",VM ino
-https://59ef525c24caa.streamlock.net/vmtv/vmlatino/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",XITE Nuevo ino
 https://d3bsgqzbpkrvbb.cloudfront.net/XITE_Nuevo_Latino.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",XITE Siempre ino
