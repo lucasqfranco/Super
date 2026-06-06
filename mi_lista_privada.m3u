@@ -1,6 +1,8 @@
 #EXTM3U
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",3ABN ino
 https://3abn.bozztv.com/3abn2/Lat_live/smil:Lat_live.smil/playlist.m3u8
+#EXTINF:-1 group-title="General" x-country="" x-genre="General",¡Viva ino!
+https://iptv.prosto.tv/ch138/tracks-v2a1/1.m3u8?live=1&ip=178.136.40.86&id=921233&secret=9szoe89y&ses=8a9f3acf84249fbe&uid=9szoe89y&cs_track=false&e=1783163037&st=907ywHdZsxDhbfHEV52usw
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",AMC en Español
 https://pb-fmbyorn1d0n1n.akamaized.net/v1/amc_amcespanol_3/samsungheadend_us/latest/main/hls/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Beyblade en Español
