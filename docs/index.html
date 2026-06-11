@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Global · Canales y películas</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon">📺</span>
+                <h1>TV Global</h1>
+            </div>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="channels">📡 Canales</button>
+                <button class="tab-btn" data-tab="movies">🎬 Películas</button>
+            </div>
+        </header>
+
+        <div class="filters-bar" id="filtersBar">
+            <div class="filter-group">
+                <label>🌎 País</label>
+                <select id="countryFilter"></select>
+            </div>
+            <div class="filter-group">
+                <label>📂 Categoría</label>
+                <select id="categoryFilter"></select>
+            </div>
+            <div class="search-group">
+                <input type="text" id="searchInput" placeholder="Buscar canal o película...">
+            </div>
+        </div>
+
+        <div class="content-grid" id="contentGrid">
+            <div class="loading">Cargando contenido...</div>
+        </div>
+
+        <div id="playerModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3 id="playerTitle">Reproduciendo</h3>
+                <video id="videoPlayer" controls autoplay></video>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
