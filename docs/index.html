@@ -3,29 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Global Premium · Canales, Películas y Series</title>
+    <title>TV Argentina · Canales en vivo</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <header>
             <div class="logo">
-                <span class="logo-icon">📺</span>
-                <h1>TV Global <span class="premium-badge">PREMIUM</span></h1>
+                <span class="logo-icon">🇦🇷</span>
+                <h1>TV Argentina</h1>
             </div>
             <div class="stats" id="stats"></div>
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="channels">📡 Canales en Vivo</button>
-                <button class="tab-btn" data-tab="movies">🎬 Películas y Series</button>
-            </div>
         </header>
 
-        <div class="filters-bar" id="channelsFilters">
-            <div class="filter-group">
-                <label>🌎 País</label>
-                <select id="countryFilter"></select>
-            </div>
+        <div class="filters-bar">
             <div class="filter-group">
                 <label>📂 Categoría</label>
                 <select id="categoryFilter"></select>
@@ -35,18 +27,8 @@
             </div>
         </div>
 
-        <div class="filters-bar" id="moviesFilters" style="display: none;">
-            <div class="filter-group">
-                <label>🎬 Género</label>
-                <select id="genreFilter"></select>
-            </div>
-            <div class="search-group">
-                <input type="text" id="movieSearchInput" placeholder="🔍 Buscar película...">
-            </div>
-        </div>
-
         <div class="content-grid" id="contentGrid">
-            <div class="loading"><div class="loader"></div><p>Cargando contenido premium...</p></div>
+            <div class="loading"><div class="loader"></div><p>Cargando canales argentinos...</p></div>
         </div>
 
         <div id="playerModal" class="modal">
