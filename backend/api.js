@@ -1,102 +1,85 @@
 const express = require('express');
 const axios = require('axios');
-const parser = require('iptv-playlist-parser');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 
-// ============================================
-// ÚNICA FUENTE CONFIRMADA QUE FUNCIONA
-// ============================================
+// Fuente de canales argentinos
 const CHANNELS_URL = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u';
 
-let allChannels = [];
+let channels = [];
 
-// ============================================
-// DETECTAR CATEGORÍA
-// ============================================
-function getCategory(name) {
-    const n = name.toLowerCase();
-    if (n.includes('f1') || n.includes('formula')) return '🏎️ Fórmula 1';
-    if (n.includes('deporte') || n.includes('sports') || n.includes('futbol') || n.includes('tyc')) return '⚽ Deportes';
-    if (n.includes('noticia') || n.includes('news') || n.includes('a24') || n.includes('tn')) return '📰 Noticias';
-    if (n.includes('musica') || n.includes('music')) return '🎵 Música';
-    if (n.includes('infantil') || n.includes('kids')) return '🧸 Infantil';
-    if (n.includes('pelicula') || n.includes('movie')) return '🎬 Cine';
-    return '📺 General';
-}
-
-// ============================================
-// CARGAR CANALES
-// ============================================
 async function loadChannels() {
     try {
-        console.log('📡 Cargando canales argentinos...');
-        const response = await axios.get(CHANNELS_URL, { timeout: 20000 });
-        const parsed = parser.parse(response.data);
+        console.log('Cargando canales...');
+        const response = await axios.get(CHANNELS_URL);
+        const content = response.data;
         
-        const channels = parsed.items.map((item, idx) => ({
-            id: idx,
-            name: item.name,
-            url: item.url,
-            category: getCategory(item.name),
-            quality: item.name.match(/(\d{3,4}p)/i)?.[1] || 'HD'
-        })).filter(ch => ch.url && ch.url.startsWith('http'));
+        // Parsear manualmente el M3U
+        const lines = content.split('\n');
+        const newChannels = [];
         
-        allChannels = channels;
-        console.log(`✅ Cargados ${allChannels.length} canales argentinos`);
-        console.log(`📺 Ejemplo: ${allChannels.slice(0, 3).map(c => c.name).join(', ')}`);
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('#EXTINF')) {
+                const nameMatch = lines[i].match(/,(.+)$/);
+                const name = nameMatch ? nameMatch[1] : 'Canal';
+                const url = lines[i + 1];
+                
+                if (url && url.startsWith('http')) {
+                    let category = 'General';
+                    const lowerName = name.toLowerCase();
+                    if (lowerName.includes('deporte') || lowerName.includes('sports')) category = '⚽ Deportes';
+                    else if (lowerName.includes('noticia') || lowerName.includes('news')) category = '📰 Noticias';
+                    else if (lowerName.includes('f1') || lowerName.includes('formula')) category = '🏎️ F1';
+                    
+                    newChannels.push({
+                        id: i,
+                        name: name,
+                        url: url,
+                        category: category,
+                        quality: name.includes('720p') ? 'HD' : 'SD'
+                    });
+                }
+            }
+        }
+        
+        channels = newChannels;
+        console.log(`✅ Cargados ${channels.length} canales`);
     } catch (error) {
-        console.error('❌ Error:', error.message);
-        allChannels = [];
+        console.error('Error:', error.message);
     }
 }
 
-// ============================================
-// ENDPOINTS
-// ============================================
+// Endpoints
 app.get('/api/channels', (req, res) => {
-    let result = [...allChannels];
-    const { category, search } = req.query;
+    let result = [...channels];
     
-    if (category && category !== 'Todos') {
-        result = result.filter(ch => ch.category === category);
+    if (req.query.category && req.query.category !== 'Todos') {
+        result = result.filter(c => c.category === req.query.category);
     }
-    if (search) {
-        const term = search.toLowerCase();
-        result = result.filter(ch => ch.name.toLowerCase().includes(term));
+    if (req.query.search) {
+        const term = req.query.search.toLowerCase();
+        result = result.filter(c => c.name.toLowerCase().includes(term));
     }
     
     res.json(result);
 });
 
 app.get('/api/categories', (req, res) => {
-    const cats = ['Todos', ...new Set(allChannels.map(ch => ch.category))];
+    const cats = ['Todos', ...new Set(channels.map(c => c.category))];
     res.json(cats);
 });
 
 app.get('/api/status', (req, res) => {
-    res.json({
-        status: 'online',
-        channels: allChannels.length,
-        lastUpdate: new Date().toISOString()
-    });
+    res.json({ status: 'ok', channels: channels.length });
 });
 
-// ============================================
-// INICIAR
-// ============================================
 const PORT = process.env.PORT || 3000;
 
-async function start() {
-    await loadChannels();
-    setInterval(loadChannels, 6 * 3600000); // Cada 6 horas
-    
-    app.listen(PORT, () => {
-        console.log(`\n🚀 API corriendo en http://localhost:${PORT}`);
-        console.log(`📺 Endpoint: /api/channels`);
-    });
-}
+loadChannels();
+setInterval(loadChannels, 3600000);
 
-start();
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+});
