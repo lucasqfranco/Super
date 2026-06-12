@@ -6,112 +6,60 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-// ==============================================
-// 🔥 FUENTES DE CONTENIDO: ESTRATEGIA DEFINITIVA
-// ==============================================
-
-// Fuente 1: El gigante de canales argentinos (IPTV-org) - se actualiza solo
-const MAIN_ARGENTINA_SOURCE = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u';
-
-// Fuente 2: Tu lista privada (para canales específicos)
-const PRIVATE_LIST_URL = 'https://raw.githubusercontent.com/lucasqfranco/Super/main/mi_lista_privada.m3u';
-
-// Fuente 3: Películas/Series (las dejamos comentadas hasta que encuentres una estable)
-// const MOVIES_SOURCE = '...';
+// ============================================
+// ÚNICA FUENTE CONFIRMADA QUE FUNCIONA
+// ============================================
+const CHANNELS_URL = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u';
 
 let allChannels = [];
 
-// ==============================================
-// 🧠 FUNCIÓN INTELIGENTE PARA DETECTAR CATEGORÍAS
-// ==============================================
-function detectCategory(channelName) {
-    const name = channelName.toLowerCase();
-    if (name.includes('f1') || name.includes('formula 1')) return '🏎️ Fórmula 1';
-    if (name.includes('futbol') || name.includes('soccer') || name.includes('deporte')) return '⚽ Fútbol/Deportes';
-    if (name.includes('tyc sports')) return '⚽ Deportes (TyC)';
-    if (name.includes('noticia') || name.includes('news') || name.includes('a24') || name.includes('tn')) return '📰 Noticias 24/7';
-    if (name.includes('pelicula') || name.includes('movie')) return '🎬 Cine y Series';
-    if (name.includes('infantil') || name.includes('kids')) return '🧸 Infantil';
-    if (name.includes('music') || name.includes('radio')) return '🎵 Música y Radio';
+// ============================================
+// DETECTAR CATEGORÍA
+// ============================================
+function getCategory(name) {
+    const n = name.toLowerCase();
+    if (n.includes('f1') || n.includes('formula')) return '🏎️ Fórmula 1';
+    if (n.includes('deporte') || n.includes('sports') || n.includes('futbol') || n.includes('tyc')) return '⚽ Deportes';
+    if (n.includes('noticia') || n.includes('news') || n.includes('a24') || n.includes('tn')) return '📰 Noticias';
+    if (n.includes('musica') || n.includes('music')) return '🎵 Música';
+    if (n.includes('infantil') || n.includes('kids')) return '🧸 Infantil';
+    if (n.includes('pelicula') || n.includes('movie')) return '🎬 Cine';
     return '📺 General';
 }
 
-// ==============================================
-// 📡 CARGA MAESTRA DE CANALES (Fusión)
-// ==============================================
-async function loadMasterChannels() {
-    const allLoadedChannels = [];
-    console.log('\n🔄 INICIANDO CARGA MAESTRA DE CANALES...\n');
-
-    // --- 1. Cargar canales masivos de Argentina (IPTV-org) ---
+// ============================================
+// CARGAR CANALES
+// ============================================
+async function loadChannels() {
     try {
-        console.log(`📡 Cargando fuente PRINCIPAL (IPTV-org Argentina)...`);
-        const response = await axios.get(MAIN_ARGENTINA_SOURCE, { timeout: 15000 });
+        console.log('📡 Cargando canales argentinos...');
+        const response = await axios.get(CHANNELS_URL, { timeout: 20000 });
         const parsed = parser.parse(response.data);
         
-        const mainChannels = parsed.items.map((item, idx) => ({
-            id: `main_ar_${idx}`,
+        const channels = parsed.items.map((item, idx) => ({
+            id: idx,
             name: item.name,
             url: item.url,
-            country: 'Argentina',
-            countryCode: 'AR',
-            category: detectCategory(item.name),
-            logo: item.tvg?.logo || null,
-            quality: item.name.match(/(\d{3,4}p)/i)?.[1] || 'HD',
-            source: 'IPTV-org (Masa Crítica)'
-        })).filter(ch => ch.url && ch.url.startsWith('http')); // Filtra enlaces inválidos
-        
-        allLoadedChannels.push(...mainChannels);
-        console.log(`   ✅ Cargados ${mainChannels.length} canales desde la fuente principal.`);
-    } catch (error) {
-        console.log(`   ❌ Error crítico con la fuente principal: ${error.message}`);
-    }
-
-    // --- 2. Cargar canales extra desde TU LISTA PRIVADA ---
-    try {
-        console.log(`\n📡 Cargando fuente SECUNDARIA (Tu lista privada)...`);
-        const privateResponse = await axios.get(PRIVATE_LIST_URL, { timeout: 10000 });
-        const privateParsed = parser.parse(privateResponse.data);
-        
-        const privateChannels = privateParsed.items.map((item, idx) => ({
-            id: `private_${idx}`,
-            name: item.name,
-            url: item.url,
-            country: item.raw.includes('x-country="AR"') ? 'Argentina' : 'Internacional',
-            countryCode: item.raw.includes('x-country="AR"') ? 'AR' : 'INT',
-            category: detectCategory(item.name),
-            logo: item.tvg?.logo || null,
-            quality: 'HD',
-            source: 'Tu Lista Privada (Especial)'
+            category: getCategory(item.name),
+            quality: item.name.match(/(\d{3,4}p)/i)?.[1] || 'HD'
         })).filter(ch => ch.url && ch.url.startsWith('http'));
         
-        allLoadedChannels.push(...privateChannels);
-        console.log(`   ✅ Cargados ${privateChannels.length} canales desde tu lista privada.`);
+        allChannels = channels;
+        console.log(`✅ Cargados ${allChannels.length} canales argentinos`);
+        console.log(`📺 Ejemplo: ${allChannels.slice(0, 3).map(c => c.name).join(', ')}`);
     } catch (error) {
-        console.log(`   ❌ Error al cargar tu lista privada: ${error.message}`);
+        console.error('❌ Error:', error.message);
+        allChannels = [];
     }
-
-    // --- 3. Limpieza final: Eliminar duplicados por nombre de canal ---
-    const uniqueChannels = [];
-    const channelNames = new Set();
-    for (const channel of allLoadedChannels) {
-        if (!channelNames.has(channel.name)) {
-            channelNames.add(channel.name);
-            uniqueChannels.push(channel);
-        }
-    }
-
-    allChannels = uniqueChannels;
-    console.log(`\n🎉 CARGA COMPLETADA: ${allChannels.length} canales únicos disponibles.\n`);
 }
 
-// ==============================================
-// 🌐 ENDPOINTS DE TU API
-// ==============================================
+// ============================================
+// ENDPOINTS
+// ============================================
 app.get('/api/channels', (req, res) => {
     let result = [...allChannels];
     const { category, search } = req.query;
-
+    
     if (category && category !== 'Todos') {
         result = result.filter(ch => ch.category === category);
     }
@@ -119,42 +67,36 @@ app.get('/api/channels', (req, res) => {
         const term = search.toLowerCase();
         result = result.filter(ch => ch.name.toLowerCase().includes(term));
     }
+    
     res.json(result);
 });
 
 app.get('/api/categories', (req, res) => {
-    // Extrae categorías únicas de los canales cargados
-    const cats = new Set(allChannels.map(ch => ch.category));
-    res.json(['Todos', ...Array.from(cats).sort()]);
+    const cats = ['Todos', ...new Set(allChannels.map(ch => ch.category))];
+    res.json(cats);
 });
 
 app.get('/api/status', (req, res) => {
     res.json({
         status: 'online',
         channels: allChannels.length,
-        lastUpdate: new Date().toISOString(),
-        message: '🇦🇷 Modo Argentina: Canales masivos + tu lista privada'
+        lastUpdate: new Date().toISOString()
     });
 });
 
-// ==============================================
-// 🚀 INICIO DEL SERVIDOR
-// ==============================================
+// ============================================
+// INICIAR
+// ============================================
 const PORT = process.env.PORT || 3000;
 
-async function startServer() {
-    await loadMasterChannels();
-    // Recarga automática cada 4 horas para estar al día
-    setInterval(loadMasterChannels, 4 * 60 * 60 * 1000);
+async function start() {
+    await loadChannels();
+    setInterval(loadChannels, 6 * 3600000); // Cada 6 horas
     
     app.listen(PORT, () => {
-        console.log(`\n✅ SERVIDOR CORRIENDO EN http://localhost:${PORT}`);
-        console.log('========================================');
-        console.log('🇦🇷 TV ARGENTINA PREMIUM - ESTRATEGIA HÍBRIDA');
-        console.log('✅ Fuente principal: IPTV-org (Masa crítica, +150 canales)');
-        console.log('✅ Fuente secundaria: Tu lista privada (Canales específicos)');
-        console.log('========================================\n');
+        console.log(`\n🚀 API corriendo en http://localhost:${PORT}`);
+        console.log(`📺 Endpoint: /api/channels`);
     });
 }
 
-startServer();
+start();
