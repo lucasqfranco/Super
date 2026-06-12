@@ -1,6 +1,7 @@
 {
-  "name": "tv-backend",
-  "version": "1.0.0",
+  "name": "tv-global-premium",
+  "version": "3.0.0",
+  "description": "API premium para canales en vivo, películas y series",
   "main": "api.js",
   "scripts": {
     "start": "node api.js"
