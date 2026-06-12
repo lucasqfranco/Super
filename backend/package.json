@@ -1,7 +1,6 @@
 {
-  "name": "tv-global-premium",
-  "version": "3.0.0",
-  "description": "API premium para canales en vivo, películas y series",
+  "name": "tv-argentina",
+  "version": "1.0.0",
   "main": "api.js",
   "scripts": {
     "start": "node api.js"
