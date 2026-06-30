@@ -5,9 +5,9 @@ https://3abn.bozztv.com/3abn2/Lat_live/smil:Lat_live.smil/playlist.m3u8
 https://iptv.prosto.tv/ch138/index.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",AMC en Español
 https://pb-fmbyorn1d0n1n.akamaized.net/v1/amc_amcespanol_3/samsungheadend_us/latest/main/hls/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="AR" x-genre="General",AvatA lenda de Aang
+#EXTINF:-1 group-title="Infantil" x-country="AR" x-genre="Infantil",AvatA lenda de Aang
 https://jmp2.uk/plu-6759eeb1bd523200083b4f29.m3u8
-#EXTINF:-1 group-title="General" x-country="AR" x-genre="General",AvatLa Leyenda de Aang
+#EXTINF:-1 group-title="Infantil" x-country="AR" x-genre="Infantil",AvatLa Leyenda de Aang
 https://jmp2.uk/plu-6759ee82bd523200083b4f0f.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Beyblade en Español
 https://amg01796-amg01796c8-rakuten-es-5333.playouts.now.amagi.tv/playlist/amg01796-fastmediafast-beybladees-rakutenes/playlist.m3u8
@@ -19,7 +19,7 @@ https://videostream.chileservidores.com:8081/latina/index.m3u8
 https://jmp2.uk/plu-668c5cb4f01dbe0008dd4082.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",CGTN Español
 https://espanol-livews.cgtn.com/hls/LSveOGBaBw41Ea7ukkVAUdKQ220802LSTexu6xAuFH8VZNBLE1ZNEa220802cd/playlist.m3u8
-#EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Cine en español
+#EXTINF:-1 group-title="Deportes" x-country="" x-genre="Deportes",Cine en español
 https://jmp2.uk/plu-5cf96b1c4f1ca3f0629f4bf0.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Comedy Central en español
 https://jmp2.uk/plu-5cf96dad1652631e36d43320.m3u8
