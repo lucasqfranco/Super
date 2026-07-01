@@ -1,8 +1,6 @@
 #EXTM3U
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",3ABN ino
 https://3abn.bozztv.com/3abn2/Lat_live/smil:Lat_live.smil/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",like Gecko) Chrome/149.0.0.0 Safi/537.3" group-title="Music",¡Viva ino!
-https://iptv.prosto.tv/ch138/index.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",AMC en Español
 https://pb-fmbyorn1d0n1n.akamaized.net/v1/amc_amcespanol_3/samsungheadend_us/latest/main/hls/playlist.m3u8
 #EXTINF:-1 group-title="Infantil" x-country="AR" x-genre="Infantil",AvatA lenda de Aang
@@ -77,8 +75,6 @@ https://cdn.mycloudstream.io/hls/live/broadcast/xn44vdc5/index.m3u8
 https://jmp2.uk/plu-64d161c93c785e0008df575e.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Vevo ino
 https://amg00056-amg00056c13-rakuten-es-3246.playouts.now.amagi.tv/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",VM ino
-https://59ef525c24caa.streamlock.net/vmtv/vmlatino/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",XITE Nuevo ino
 https://d3bsgqzbpkrvbb.cloudfront.net/XITE_Nuevo_Latino.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",XITE Nuevo ino
