@@ -11,6 +11,8 @@ https://jmp2.uk/plu-6759ee82bd523200083b4f0f.m3u8
 https://amg01796-amg01796c8-rakuten-es-5333.playouts.now.amagi.tv/playlist/amg01796-fastmediafast-beybladees-rakutenes/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Bonches inos TV
 https://5790d294af2dc.streamlock.net/latinostv/latinostv/playlist.m3u8
+#EXTINF:-1 group-title="General" x-country="" x-genre="General",Canal ino 54
+https://videostream.chileservidores.com:8081/latina/index.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",CBS en español
 https://jmp2.uk/plu-668c5cb4f01dbe0008dd4082.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",CGTN Español
@@ -18,7 +20,7 @@ https://espanol-livews.cgtn.com/hls/LSveOGBaBw41Ea7ukkVAUdKQ220802LSTexu6xAuFH8V
 #EXTINF:-1 group-title="Deportes" x-country="" x-genre="Deportes",Cine en español
 https://jmp2.uk/plu-5cf96b1c4f1ca3f0629f4bf0.m3u8
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Cineino
-http://45.162.193.35:80/CINELATINO_HD/index.m3u8
+http://45.162.193.35/CINELATINO_HD/index.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Comedy Central en español
 https://jmp2.uk/plu-5cf96dad1652631e36d43320.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Cops en Español
