@@ -3,8 +3,6 @@
 https://3abn.bozztv.com/3abn2/Lat_live/smil:Lat_live.smil/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",AMC en Español
 https://pb-fmbyorn1d0n1n.akamaized.net/v1/amc_amcespanol_3/samsungheadend_us/latest/main/hls/playlist.m3u8
-#EXTINF:-1 group-title="Infantil" x-country="AR" x-genre="Infantil",AvatLa Leyenda de Aang
-https://jmp2.uk/plu-6759ee82bd523200083b4f0f.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Beyblade en Español
 https://amg01796-amg01796c8-rakuten-es-5333.playouts.now.amagi.tv/playlist/amg01796-fastmediafast-beybladees-rakutenes/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Bonches inos TV
@@ -13,18 +11,10 @@ https://5790d294af2dc.streamlock.net/latinostv/latinostv/playlist.m3u8
 https://videostream.chileservidores.com:8081/latina/index.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",CGTN Español
 https://espanol-livews.cgtn.com/hls/LSveOGBaBw41Ea7ukkVAUdKQ220802LSTexu6xAuFH8VZNBLE1ZNEa220802cd/playlist.m3u8
-#EXTINF:-1 group-title="Deportes" x-country="" x-genre="Deportes",Cine en español
-https://jmp2.uk/plu-5cf96b1c4f1ca3f0629f4bf0.m3u8
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Cineino
 http://45.162.193.35/CINELATINO_HD/index.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Comedy Central en español
-https://jmp2.uk/plu-5cf96dad1652631e36d43320.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Cops en Español
 https://rightsboosterltd-cops-1-es.rakuten.wurl.tv/playlist.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",CSI en Español
-https://jmp2.uk/plu-604928d54a4f730007ff76bc.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",CSI: Miami en español
-https://jmp2.uk/plu-632b5950b515b000079e6b81.m3u8
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",DaystEspañol
 https://live-mcl.cdn01.net/smarttv/64wj6m6d8/playlist.m3u8
 #EXTINF:-1 group-title="Noticias" x-country="" x-genre="Noticias",France 24 Español
@@ -37,14 +27,6 @@ https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/4d
 https://amg00375-fusemedia-latinovibes-xumo-qyjhw.amagi.tv/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Lighting Lives Blessing Nations TV ino
 https://brightstar-latino-pull-secure.akamaized.net/brightstarlatino/stream.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",MTV Flow ino
-https://jmp2.uk/plu-62b218fc511d4b00070ddc0c.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",MTV Flow ino
-https://jmp2.uk/plu-5d3609cd6a6c78d7672f2a81.m3u8
-#EXTINF:-1 group-title="Infantil" x-country="" x-genre="Infantil",Nickelodeon en español
-https://jmp2.uk/plu-5d8d08395f39465da6fb3ec4.m3u8
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",Pokémon en español
-https://jmp2.uk/plu-69e6be40fde57cd5ba562b29.m3u8
 #EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Rakuten TV Cine Español
 https://3ed8837c27bf41dabe8e2627be2e57e6.mediatailor.eu-west-1.amazonaws.com/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6196/master.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Soap ino
