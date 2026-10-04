@@ -11,6 +11,8 @@ https://jmp2.uk/plu-6759ee82bd523200083b4f0f.m3u8
 https://5790d294af2dc.streamlock.net/latinostv/latinostv/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Canal ino 54
 https://videostream.chileservidores.com:8081/latina/index.m3u8
+#EXTINF:-1 group-title="Cine" x-country="" x-genre="Cine",Cineino
+http://206.135.11.174:8010/play/a0lq/index.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",ino Channel TV
 https://cdn.vegasplus.us/vegas/latch/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",LLBN TV ino
