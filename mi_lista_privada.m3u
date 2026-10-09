@@ -7,6 +7,8 @@ http://stream.mcquack.net/285/index.m3u8
 https://5790d294af2dc.streamlock.net/latinostv/latinostv/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Canal ino 54
 https://videostream.chileservidores.com:8081/latina/index.m3u8
+#EXTINF:-1 group-title="General" x-country="" x-genre="General",ino Channel TV
+https://cdn.vegasplus.us/vegas/latch/playlist.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",LLBN TV ino
 https://brightstar-latino-pull-secure.akamaized.net/brightstarlatino/stream.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",Stingray Romance ino
