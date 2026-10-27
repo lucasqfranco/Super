@@ -1,6 +1,4 @@
 #EXTM3U
-#EXTINF:-1 group-title="General" x-country="" x-genre="General",3ABN ino
-http://138.59.177.78:9999/play/a0a3/index.m3u8
 #EXTINF:-1 group-title="General" x-country="" x-genre="General",¡Viva ino!
 http://stream.mcquack.net/285/index.m3u8
 #EXTINF:-1 group-title="Infantil" x-country="AR" x-genre="Infantil",AvatA lenda de Aang
